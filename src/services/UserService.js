@@ -1,6 +1,6 @@
 // src/services/userService.js
 
-const BASE_URL = "http://127.0.0.1:5000/";
+const BASE_URL = "http://34.202.231.19/";
 
 export async function getAllUsers() {
     try {
