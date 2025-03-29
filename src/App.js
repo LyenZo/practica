@@ -1,25 +1,65 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import LoginForm from './components/userList/LoginForm';
+import UserList from './components/userList/UsersList';
+import UserForm from './components/userList/UserForm';
+import { ToastContainer } from 'react-toastify';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const App = () => {
+    const [access_token, setAuthToken] = useState(null);
+
+    // Cargar el token desde localStorage si está disponible
+    useEffect(() => {
+        const token = localStorage.getItem('access_token');
+        if (token) {
+            setAuthToken(token);
+        }
+    }, []);
+
+    // Manejar el cierre de sesión
+    const handleLogout = () => {
+        localStorage.removeItem('access_token'); // Eliminar token del localStorage
+        setAuthToken(null); // Limpiar el estado de autenticación
+    };
+
+    const handleLoginSuccess = (token) => {
+        localStorage.setItem('access_token', token);
+        setAuthToken(token);
+    };
+
+    return (
+        <Router>
+            <div>
+                <ToastContainer /> {/* Este es el contenedor donde se mostrarán las notificaciones */}
+
+                <Routes>
+                    {/* Si no hay token, mostrar LoginForm. Si hay token, redirigir a UsersList */}
+                    <Route
+                        path="/"
+                        element={access_token ? <Navigate to="/users" /> : <LoginForm onLoginSuccess={handleLoginSuccess} />}
+                    />
+
+                    {/* Ruta para UserList, solo accesible si hay token */}
+                    <Route
+                        path="/users"
+                        element={
+                            access_token ? (
+                                <UserList onLogout={handleLogout} />  
+                            ) : (
+                                <Navigate to="/" />
+                            )
+                        }
+                    />
+
+                    {/* Ruta para UserForm, solo accesible si hay token */}
+                    <Route
+                        path="/user-form"
+                        element={access_token ? <UserForm /> : <Navigate to="/" />}
+                    />
+                </Routes>
+            </div>
+        </Router>
+    );
+};
 
 export default App;
