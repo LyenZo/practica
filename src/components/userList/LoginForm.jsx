@@ -16,7 +16,7 @@ const LoginForm = ({ onLoginSuccess, onLogout }) => {
         }
 
         try {
-            const response = await fetch('http://34.202.231.19//users/login', {
+            const response = await fetch('https://34.202.231.19//users/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
